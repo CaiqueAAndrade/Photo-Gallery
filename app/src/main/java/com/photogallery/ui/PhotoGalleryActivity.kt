@@ -2,24 +2,29 @@ package com.photogallery.ui
 
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.photogallery.PhotoGalleryApplication
 import com.photogallery.R
 import com.photogallery.data.remote.EventObserver
 import com.photogallery.data.remote.InternetConnectionListener
 import com.photogallery.databinding.ActivityPhotoGalleryBinding
-import org.koin.android.viewmodel.ext.android.viewModel
 import com.photogallery.ui.viewmodel.PhotoGalleryViewModel
+import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener {
+
+class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
+    PhotosRecyclerViewAdapter.PhotosItemClickListener {
 
     private lateinit var binding: ActivityPhotoGalleryBinding
     private lateinit var photoGalleryApplication: PhotoGalleryApplication
     private lateinit var internetConnectionListener: InternetConnectionListener
+    private val adapter = PhotosRecyclerViewAdapter(this)
 
     private val viewModel by viewModel<PhotoGalleryViewModel> {
         parametersOf()
@@ -30,6 +35,11 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_photo_gallery)
 
         photoGalleryApplication = application as PhotoGalleryApplication
+
+        binding.rvPhotos.layoutManager =
+            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+
+        binding.rvPhotos.adapter = adapter
 
         setupStatusBarColor()
         setInternetConnectionListener(this)
@@ -44,7 +54,7 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener {
 
     private fun subscribe() {
         viewModel.photosListLiveData.observe(this, EventObserver {
-            binding.tvTest.text = it.first().user.userName
+            adapter.setData(it)
         })
     }
 
@@ -69,5 +79,9 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener {
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
+    }
+
+    override fun photoItemClickListener(image: String) {
+        Toast.makeText(this, image, Toast.LENGTH_LONG).show()
     }
 }

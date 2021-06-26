@@ -35,6 +35,7 @@ ext {
     materialVersion = '1.3.0'
     appcompatVersion = '1.3.0'
     coreVersion = '1.5.0'
+    glideVersion = '4.12.0'
 }
 
 task clean(type: Delete) {
