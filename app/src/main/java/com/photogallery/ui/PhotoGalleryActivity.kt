@@ -8,12 +8,14 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.photogallery.PhotoGalleryApplication
 import com.photogallery.R
 import com.photogallery.data.remote.EventObserver
 import com.photogallery.data.remote.InternetConnectionListener
 import com.photogallery.databinding.ActivityPhotoGalleryBinding
 import com.photogallery.ui.viewmodel.PhotoGalleryViewModel
+import com.photogallery.util.PaginationScrollListener
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -25,6 +27,7 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
     private lateinit var photoGalleryApplication: PhotoGalleryApplication
     private lateinit var internetConnectionListener: InternetConnectionListener
     private val adapter = PhotosRecyclerViewAdapter(this)
+    private var isListLoading = true
 
     private val viewModel by viewModel<PhotoGalleryViewModel> {
         parametersOf()
@@ -36,11 +39,8 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
 
         photoGalleryApplication = application as PhotoGalleryApplication
 
-        binding.rvPhotos.layoutManager =
-            StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
-        binding.rvPhotos.adapter = adapter
-
+        setupRecyclerViewBehavior()
         setupStatusBarColor()
         setInternetConnectionListener(this)
         viewModel.getPhotos()
@@ -54,8 +54,32 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
 
     private fun subscribe() {
         viewModel.photosListLiveData.observe(this, EventObserver {
+            isListLoading = true
             adapter.setData(it)
         })
+
+        viewModel.errorLiveData.observe(this, EventObserver {
+            Snackbar.make(findViewById(android.R.id.content), it, Snackbar.LENGTH_SHORT).show()
+        })
+    }
+
+    private fun setupRecyclerViewBehavior() {
+        binding.apply {
+            val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+
+            rvPhotos.layoutManager = layoutManager
+            rvPhotos.adapter = adapter
+
+            rvPhotos.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
+                override fun loadMoreItems() {
+                    if (isListLoading) {
+                        isListLoading = false
+                        viewModel.getPhotos()
+                    }
+                }
+
+            })
+        }
     }
 
     private fun setupStatusBarColor() {
