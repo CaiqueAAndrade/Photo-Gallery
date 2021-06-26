@@ -6,6 +6,7 @@ data class UnsplashResponse(
     val description: String?,
     @field:Json(name = "alt_description")
     val altDescription: String,
+    val color: String,
     @field:Json(name = "urls")
     val urls: Urls,
     @field:Json(name = "user")

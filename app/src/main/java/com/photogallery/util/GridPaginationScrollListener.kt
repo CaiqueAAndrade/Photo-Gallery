@@ -4,7 +4,7 @@ package com.photogallery.util
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 
-abstract class PaginationScrollListener(private val layoutManager: StaggeredGridLayoutManager) :
+abstract class GridPaginationScrollListener(private val layoutManager: StaggeredGridLayoutManager) :
     RecyclerView.OnScrollListener() {
 
     private var pastVisibleItems = 0

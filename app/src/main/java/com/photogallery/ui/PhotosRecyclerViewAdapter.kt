@@ -11,7 +11,7 @@ import com.photogallery.model.UnsplashResponse
 
 class PhotosRecyclerViewAdapter(
     val listener: PhotosItemClickListener
-)  : RecyclerView.Adapter<PhotosRecyclerViewAdapter.PhotosViewHolder>(){
+) : RecyclerView.Adapter<PhotosRecyclerViewAdapter.PhotosViewHolder>() {
 
     private var items: ArrayList<UnsplashResponse> = arrayListOf()
 
@@ -49,7 +49,7 @@ class PhotosRecyclerViewAdapter(
     override fun getItemCount(): Int = items.size
 
     inner class PhotosViewHolder(private val binding: ItemPhotoBinding) :
-            RecyclerView.ViewHolder(binding.root), View.OnClickListener {
+        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
         init {
             binding.root.setOnClickListener(this)
         }

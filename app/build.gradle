@@ -1,7 +1,7 @@
-plugins {
-    id 'com.android.application'
-    id 'kotlin-android'
-    id 'kotlin-kapt'
+apply {
+    plugin 'com.android.application'
+    plugin 'kotlin-android'
+    plugin 'kotlin-kapt'
 }
 
 android {

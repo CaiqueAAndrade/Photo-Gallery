@@ -3,4 +3,6 @@
 
     <string name="error_message">Sorry, something went wrong :( \nError: %a</string>
     <string name="internet_error_description">Internet Connection error</string>
+    <string name="linear_list_option">List</string>
+    <string name="grid_list_option">Grid</string>
 </resources>

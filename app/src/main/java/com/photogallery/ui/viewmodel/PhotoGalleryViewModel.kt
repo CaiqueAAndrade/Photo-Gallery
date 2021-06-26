@@ -1,7 +1,6 @@
 package com.photogallery.ui.viewmodel
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -31,7 +30,6 @@ class PhotoGalleryViewModel(
     fun getPhotos() {
         viewModelScope.launch {
             currentPage++
-            Log.i("Current page:", "$currentPage")
             when (val response = repository.getPhotos(currentPage)) {
                 is Result.Success -> {
                     response.data?.let {

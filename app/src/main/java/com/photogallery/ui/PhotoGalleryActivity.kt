@@ -1,5 +1,6 @@
 package com.photogallery.ui
 
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -7,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.photogallery.PhotoGalleryApplication
@@ -15,7 +17,8 @@ import com.photogallery.data.remote.EventObserver
 import com.photogallery.data.remote.InternetConnectionListener
 import com.photogallery.databinding.ActivityPhotoGalleryBinding
 import com.photogallery.ui.viewmodel.PhotoGalleryViewModel
-import com.photogallery.util.PaginationScrollListener
+import com.photogallery.util.GridPaginationScrollListener
+import com.photogallery.util.LinearPaginationScrollListener
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
@@ -40,8 +43,7 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
         photoGalleryApplication = application as PhotoGalleryApplication
 
 
-        setupRecyclerViewBehavior()
-        setupStatusBarColor()
+        setupLayoutBehavior()
         setInternetConnectionListener(this)
         viewModel.getPhotos()
         subscribe()
@@ -50,6 +52,39 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
     override fun onResume() {
         super.onResume()
         photoGalleryApplication.setInternetConnectionListener(this)
+    }
+
+    private fun setupStatusBarColor() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val wic = WindowInsetsControllerCompat(window, window.decorView)
+            wic.isAppearanceLightStatusBars = true
+            window.statusBarColor = ContextCompat.getColor(this, android.R.color.white)
+        }
+    }
+
+    private fun setupLayoutBehavior() {
+        binding.apply {
+            setupStatusBarColor()
+
+            rvPhotos.adapter = adapter
+            val linearLayoutManager =
+                LinearLayoutManager(this@PhotoGalleryActivity, LinearLayoutManager.VERTICAL, false)
+            val staggeredLayoutManager =
+                StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            setupLinearRecyclerViewBehavior(linearLayoutManager)
+
+            binding.smSelectListType.setOnCheckedChangeListener { _, b ->
+                if (b) {
+                    tvGridOption.setTypeface(null, Typeface.BOLD)
+                    tvLinearOption.setTypeface(null, Typeface.NORMAL)
+                    setupGridRecyclerViewBehavior(staggeredLayoutManager)
+                } else {
+                    tvLinearOption.setTypeface(null, Typeface.BOLD)
+                    tvGridOption.setTypeface(null, Typeface.NORMAL)
+                    setupLinearRecyclerViewBehavior(linearLayoutManager)
+                }
+            }
+        }
     }
 
     private fun subscribe() {
@@ -63,14 +98,11 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
         })
     }
 
-    private fun setupRecyclerViewBehavior() {
+    private fun setupGridRecyclerViewBehavior(layoutManager: StaggeredGridLayoutManager) {
         binding.apply {
-            val layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-
             rvPhotos.layoutManager = layoutManager
-            rvPhotos.adapter = adapter
 
-            rvPhotos.addOnScrollListener(object : PaginationScrollListener(layoutManager) {
+            rvPhotos.addOnScrollListener(object : GridPaginationScrollListener(layoutManager) {
                 override fun loadMoreItems() {
                     if (isListLoading) {
                         isListLoading = false
@@ -82,11 +114,19 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
         }
     }
 
-    private fun setupStatusBarColor() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val wic = WindowInsetsControllerCompat(window, window.decorView)
-            wic.isAppearanceLightStatusBars = true
-            window.statusBarColor = ContextCompat.getColor(this, android.R.color.white)
+    private fun setupLinearRecyclerViewBehavior(layoutManager: LinearLayoutManager) {
+        binding.apply {
+            rvPhotos.layoutManager = layoutManager
+
+            rvPhotos.addOnScrollListener(object : LinearPaginationScrollListener(layoutManager) {
+                override fun loadMoreItems() {
+                    if (isListLoading) {
+                        isListLoading = false
+                        viewModel.getPhotos()
+                    }
+                }
+
+            })
         }
     }
 
