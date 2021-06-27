@@ -9,4 +9,5 @@
 
     <string name="error_message">Sorry, something went wrong :( \nError: %a</string>
     <string name="internet_error_description">Internet Connection error</string>
+    <string name="could_not_find_photos">Sorry, could not find a photo</string>
 </resources>

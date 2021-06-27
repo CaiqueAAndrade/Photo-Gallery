@@ -1,6 +1,7 @@
 package com.photogallery.data.remote
 
 import android.content.Context
+import com.photogallery.BuildConfig
 import com.photogallery.PhotoGalleryApplication
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
@@ -15,7 +16,9 @@ fun provideOkHttpClient(context: Context): OkHttpClient.Builder {
     val timeout = 30L
 
     val interceptor: HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
+        if (BuildConfig.DEBUG) {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
     }
 
     val cookieManager = CookieManager()
@@ -46,9 +49,10 @@ fun provideOkHttpClient(context: Context): OkHttpClient.Builder {
 }
 
 fun provideServiceUnsplash(client: OkHttpClient.Builder): UnsplashApi {
-//    .baseUrl("https://api.unsplash.com/")
+//    Unsplash api mock in case is used more than 50 requests in 1 hour
+//    .baseUrl("https://private-00cd68-caique1.apiary-mock.com/")
     val retrofit = Retrofit.Builder()
-        .baseUrl("https://private-00cd68-caique1.apiary-mock.com/")
+        .baseUrl("https://api.unsplash.com/")
         .addCallAdapterFactory(CallAdapterFactory())
         .addConverterFactory(MoshiConverterFactory.create())
         .client(client.build())

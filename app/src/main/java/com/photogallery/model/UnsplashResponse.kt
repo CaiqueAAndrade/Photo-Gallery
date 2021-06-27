@@ -9,9 +9,7 @@ data class UnsplashResponse(
     val color: String,
     val width: Int,
     val height: Int,
-    @field:Json(name = "urls")
     val urls: Urls,
-    @field:Json(name = "user")
     val user: User
 )
 

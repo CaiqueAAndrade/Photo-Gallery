@@ -6,6 +6,7 @@
     <data>
 
         <import type="android.view.View" />
+
         <import type="android.graphics.Typeface" />
 
         <variable
@@ -52,8 +53,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:text="@string/grid_list_option"
-            android:typeface="@{Typeface.defaultFromStyle(vm.isGridLayoutLiveData() ? Typeface.BOLD : Typeface.NORMAL)}"
             android:textColor="@color/heavy_purple"
+            android:typeface="@{Typeface.defaultFromStyle(vm.isGridLayoutLiveData() ? Typeface.BOLD : Typeface.NORMAL)}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/et_input_image_name" />
 
@@ -94,10 +95,10 @@
             android:layout_width="46dp"
             android:layout_height="46dp"
             android:visibility="@{vm.isLoadingLiveData() ? View.VISIBLE : View.GONE}"
-            app:layout_constraintTop_toBottomOf="@+id/sm_select_list_type"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/sm_select_list_type" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

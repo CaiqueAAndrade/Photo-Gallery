@@ -89,7 +89,14 @@ class PhotoGalleryViewModel(
                         if (searchImagesPageCounter <= 1) {
                             _shouldCleanRecyclerViewMutableLiveData.value = Event(Unit)
                         }
-                        _photosListMutableLiveData.value = Event(it)
+                        if (it.results.isNotEmpty()) {
+                            _photosListMutableLiveData.value = Event(it.results)
+                        } else {
+                            setupError(
+                                getApplication<Application>()
+                                    .resources.getString(R.string.could_not_find_photos)
+                            )
+                        }
                     }
                     _isLoadingMutableLiveData.value = false
                 }

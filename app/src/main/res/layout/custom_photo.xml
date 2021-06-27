@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/ic_launcher_background" />
+                tools:src="@drawable/bg_placeholder" />
 
             <TextView
                 android:id="@+id/tv_name"

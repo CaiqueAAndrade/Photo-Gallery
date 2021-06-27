@@ -110,12 +110,8 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener {
 
             rvPhotos.addOnScrollListener(object : GridPaginationScrollListener(layoutManager) {
                 override fun loadMoreItems() {
-                    if (isListLoading) {
-                        isListLoading = false
-                        viewModel.getPhotos(etInputImageName.text.toString())
-                    }
+                    getPhotosFromApi(etInputImageName.text.toString())
                 }
-
             })
         }
     }
@@ -126,13 +122,16 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener {
 
             rvPhotos.addOnScrollListener(object : LinearPaginationScrollListener(layoutManager) {
                 override fun loadMoreItems() {
-                    if (isListLoading) {
-                        isListLoading = false
-                        viewModel.getPhotos(etInputImageName.text.toString())
-                    }
+                    getPhotosFromApi(etInputImageName.text.toString())
                 }
-
             })
+        }
+    }
+
+    private fun getPhotosFromApi(photoName: String) {
+        if (isListLoading) {
+            isListLoading = false
+            viewModel.getPhotos(photoName)
         }
     }
 

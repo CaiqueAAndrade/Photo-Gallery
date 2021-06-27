@@ -49,6 +49,12 @@ dependencies {
     testImplementation "junit:junit:$rootProject.junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$rootProject.extJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$rootProject.espressoVersion"
+    testImplementation "org.mockito:mockito-core:$rootProject.mockitoVersion"
+    testImplementation "org.mockito:mockito-inline:$rootProject.mockitoVersion"
+    testImplementation "androidx.arch.core:core-testing:$rootProject.archCoreVersion"
+    testImplementation "androidx.test:core:$rootProject.testCoreVersion"
+    debugImplementation "com.android.support.test:runner:$rootProject.testRunnerVersion"
+    testImplementation "org.robolectric:robolectric:$rootProject.robolectricVersion"
 
     //Gson
     implementation "com.google.code.gson:gson:$rootProject.gsonVersion"
