@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import com.photogallery.data.remote.InternetConnectionListener
+import com.photogallery.di.adapterModule
 import com.photogallery.di.networkModule
 import com.photogallery.di.repositoryModule
 import com.photogallery.di.viewModelModule
@@ -22,7 +23,8 @@ class PhotoGalleryApplication : Application() {
                 listOf(
                     repositoryModule,
                     viewModelModule,
-                    networkModule
+                    networkModule,
+                    adapterModule
                 )
             )
         }

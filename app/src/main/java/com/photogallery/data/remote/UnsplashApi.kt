@@ -11,4 +11,11 @@ interface UnsplashApi {
         @Query("page") page: Int,
         @Query("client_id") clientId: String
     ): Result<List<UnsplashResponse>>
+
+    @GET("/search/photos")
+    suspend fun searchPhotos(
+        @Query("page") page: Int,
+        @Query("client_id") clientId: String,
+        @Query("query") query: String
+    ): Result<List<UnsplashResponse>>
 }

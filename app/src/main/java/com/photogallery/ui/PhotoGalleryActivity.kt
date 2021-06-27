@@ -1,12 +1,12 @@
 package com.photogallery.ui
 
-import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
+import android.os.CountDownTimer
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -19,17 +19,18 @@ import com.photogallery.databinding.ActivityPhotoGalleryBinding
 import com.photogallery.ui.viewmodel.PhotoGalleryViewModel
 import com.photogallery.util.GridPaginationScrollListener
 import com.photogallery.util.LinearPaginationScrollListener
+import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
+import java.util.*
 
 
-class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
-    PhotosRecyclerViewAdapter.PhotosItemClickListener {
+class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener {
 
     private lateinit var binding: ActivityPhotoGalleryBinding
     private lateinit var photoGalleryApplication: PhotoGalleryApplication
     private lateinit var internetConnectionListener: InternetConnectionListener
-    private val adapter = PhotosRecyclerViewAdapter(this)
+    private val adapter: PhotosRecyclerViewAdapter by inject()
     private var isListLoading = true
 
     private val viewModel by viewModel<PhotoGalleryViewModel> {
@@ -64,7 +65,11 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
 
     private fun setupLayoutBehavior() {
         binding.apply {
+            vm = viewModel
+            lifecycleOwner = this@PhotoGalleryActivity
+
             setupStatusBarColor()
+            setupEditTextBehavior()
 
             rvPhotos.adapter = adapter
             val linearLayoutManager =
@@ -74,13 +79,10 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
             setupLinearRecyclerViewBehavior(linearLayoutManager)
 
             binding.smSelectListType.setOnCheckedChangeListener { _, b ->
+                viewModel.onLayoutSelected(b)
                 if (b) {
-                    tvGridOption.setTypeface(null, Typeface.BOLD)
-                    tvLinearOption.setTypeface(null, Typeface.NORMAL)
                     setupGridRecyclerViewBehavior(staggeredLayoutManager)
                 } else {
-                    tvLinearOption.setTypeface(null, Typeface.BOLD)
-                    tvGridOption.setTypeface(null, Typeface.NORMAL)
                     setupLinearRecyclerViewBehavior(linearLayoutManager)
                 }
             }
@@ -96,6 +98,10 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
         viewModel.errorLiveData.observe(this, EventObserver {
             Snackbar.make(findViewById(android.R.id.content), it, Snackbar.LENGTH_SHORT).show()
         })
+
+        viewModel.shouldCleanRecyclerViewLiveData.observe(this, EventObserver {
+            adapter.clearData()
+        })
     }
 
     private fun setupGridRecyclerViewBehavior(layoutManager: StaggeredGridLayoutManager) {
@@ -106,7 +112,7 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
                 override fun loadMoreItems() {
                     if (isListLoading) {
                         isListLoading = false
-                        viewModel.getPhotos()
+                        viewModel.getPhotos(etInputImageName.text.toString())
                     }
                 }
 
@@ -122,11 +128,27 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
                 override fun loadMoreItems() {
                     if (isListLoading) {
                         isListLoading = false
-                        viewModel.getPhotos()
+                        viewModel.getPhotos(etInputImageName.text.toString())
                     }
                 }
 
             })
+        }
+    }
+
+
+    private fun setupEditTextBehavior() {
+        var timer: CountDownTimer? = null
+        binding.etInputImageName.doOnTextChanged { text, _, _, _ ->
+            viewModel.onLoading()
+            timer?.cancel()
+            timer = object : CountDownTimer(2500, 1500) {
+                override fun onTick(millisUntilFinished: Long) {}
+                override fun onFinish() {
+                    viewModel.getPhotos(text.toString())
+                }
+            }
+            timer?.start()
         }
     }
 
@@ -143,9 +165,5 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
-    }
-
-    override fun photoItemClickListener(image: String) {
-        Toast.makeText(this, image, Toast.LENGTH_LONG).show()
     }
 }

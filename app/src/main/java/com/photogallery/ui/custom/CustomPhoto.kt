@@ -1,16 +1,23 @@
 package com.photogallery.ui.custom
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.drawable.DrawableCompat
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.photogallery.R
 import com.photogallery.model.UnsplashResponse
 
@@ -31,38 +38,116 @@ class CustomPhoto @JvmOverloads constructor(
     }
 
     fun setupView(unsplashResponse: UnsplashResponse) {
+        name.text = unsplashResponse.user.userName
+        photo.contentDescription = unsplashResponse.altDescription
 
-        /** Creating a drawable placeholder with the same color that the API brings. */
-        val unwrappedDrawable =
-            AppCompatResources.getDrawable(context, R.drawable.ic_launcher_background)
-        val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
-        DrawableCompat.setTint(wrappedDrawable, Color.parseColor(unsplashResponse.color))
-
-        /**
-         *   Using Glide to load images from Network.
-         *   With ".diskCacheStrategy(DiskCacheStrategy.DATA)"
-         *   Glide already stores the image on cache and loads it from there in case needed.
+        /*
+         * Because not every image comes with a description this code verifies
+         * if the description is null, so can replace it with altDescription
          */
+        val correctDescription = if (!unsplashResponse.description.isNullOrEmpty()) {
+            unsplashResponse.description
+        } else {
+            unsplashResponse.altDescription
+        }
+        description.text = correctDescription
+
+        // Creating placeholder
+        val placeholder =
+            getBackgroundImagePlaceholder(
+                color = unsplashResponse.color,
+                width = unsplashResponse.width,
+                height = unsplashResponse.height
+            )
+
+        // loading image with Glide
+        loadGlideImageUrl(
+            unsplashResponse = unsplashResponse,
+            placeholder = placeholder,
+            correctDescription = correctDescription
+        )
+
+    }
+
+    /**
+     *   Using Glide to load images from Network.
+     *   With ".diskCacheStrategy(DiskCacheStrategy.DATA)"
+     *   Glide already stores the image on cache and loads it from there in case needed.
+     */
+    private fun loadGlideImageUrl(
+        unsplashResponse: UnsplashResponse,
+        placeholder: Drawable,
+        correctDescription: String
+    ) {
         Glide.with(context)
             .load(unsplashResponse.urls.raw)
             .centerCrop()
             .fitCenter()
             .diskCacheStrategy(DiskCacheStrategy.DATA)
-            .error(unwrappedDrawable)
-            .placeholder(unwrappedDrawable)
+            .placeholder(placeholder)
+            .listener(object : RequestListener<Drawable> {
+                override fun onLoadFailed(
+                    e: GlideException?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    photo.setImageDrawable(placeholder)
+                    return false
+                }
+
+                override fun onResourceReady(
+                    resource: Drawable?,
+                    model: Any?,
+                    target: Target<Drawable>?,
+                    dataSource: DataSource?,
+                    isFirstResource: Boolean
+                ): Boolean {
+                    setupZoomBehavior(
+                        placeholder = placeholder,
+                        userName = unsplashResponse.user.userName,
+                        description = correctDescription,
+                        image = resource
+                    )
+                    return false
+                }
+            })
             .into(photo)
+    }
 
-        name.text = unsplashResponse.user.userName
-        photo.contentDescription = unsplashResponse.altDescription
+    /**
+     * Set image click listener after image is loaded
+     * Use already loaded image to create the dialog
+     */
+    private fun setupZoomBehavior(
+        placeholder: Drawable,
+        userName: String,
+        description: String,
+        image: Drawable?
+    ) {
+        photo.setOnClickListener {
+            val builder = AlertDialog.Builder(context)
+            val view: View = LayoutInflater.from(context).inflate(R.layout.dialog_image_zoom, null)
+            val imageView: ImageView = view.findViewById(R.id.iv_image_zoom)
+            builder.setTitle(userName)
+            builder.setMessage(description)
+            builder.setView(view)
+            builder.setCancelable(true)
+            builder.show()
 
-        /**
-         * Because not every image comes with a description this code verifies
-         * if the description is null so can replace with altDescription
-         */
-        description.text = if (!unsplashResponse.description.isNullOrEmpty()) {
-            unsplashResponse.description
-        } else {
-            unsplashResponse.altDescription
+            imageView.setImageDrawable(image ?: placeholder)
         }
+    }
+
+    /** Creating a drawable placeholder with the same color that the API brings.
+     * Set correct image size
+     * */
+    private fun getBackgroundImagePlaceholder(color: String, width: Int, height: Int): Drawable {
+        val unwrappedDrawable =
+            AppCompatResources.getDrawable(context, R.drawable.bg_placeholder)
+        val wrappedDrawable = DrawableCompat.wrap(unwrappedDrawable!!)
+        DrawableCompat.setTint(wrappedDrawable, Color.parseColor(color))
+        wrappedDrawable.setBounds(0, 0, width, height)
+        return wrappedDrawable
     }
 }

@@ -14,13 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PhotoGallery" >
 
-        <activity android:name=".ui.PhotoGalleryActivity">
+        <activity android:name=".ui.SplashScreenActivity"
+            android:theme="@style/AppTheme.Launcher" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-<!--        android:theme="@style/AppTheme.Launcher"-->
+
+        <activity android:name=".ui.PhotoGalleryActivity"
+            android:configChanges="orientation|screenSize" />
 
     </application>
 

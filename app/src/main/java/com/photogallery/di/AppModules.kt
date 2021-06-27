@@ -3,6 +3,7 @@ package com.photogallery.di
 import com.photogallery.data.remote.provideOkHttpClient
 import com.photogallery.data.remote.provideServiceUnsplash
 import com.photogallery.repository.PhotoGalleryRepository
+import com.photogallery.ui.PhotosRecyclerViewAdapter
 import com.photogallery.ui.viewmodel.PhotoGalleryViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
@@ -20,4 +21,8 @@ val viewModelModule = module {
 val networkModule = module {
     single { provideOkHttpClient(androidContext()) }
     single { provideServiceUnsplash(get()) }
+}
+
+val adapterModule = module {
+    factory { PhotosRecyclerViewAdapter() }
 }

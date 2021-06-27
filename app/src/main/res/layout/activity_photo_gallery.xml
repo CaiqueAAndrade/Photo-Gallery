@@ -3,6 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+
+        <import type="android.view.View" />
+        <import type="android.graphics.Typeface" />
+
+        <variable
+            name="vm"
+            type="com.photogallery.ui.viewmodel.PhotoGalleryViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,12 +24,26 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:text="@string/app_name"
-            android:textColor="@color/heavy_gray"
+            android:textColor="@color/heavy_orange"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <EditText
+            android:id="@+id/et_input_image_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@drawable/bg_outline_rounded_purple"
+            android:hint="@string/edittext_search_image_hint"
+            android:inputType="textAutoComplete"
+            android:padding="16dp"
+            android:textColor="@color/heavy_orange"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_screen_title" />
 
 
         <TextView
@@ -28,9 +52,10 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:text="@string/grid_list_option"
-            android:textColor="@color/heavy_gray"
+            android:typeface="@{Typeface.defaultFromStyle(vm.isGridLayoutLiveData() ? Typeface.BOLD : Typeface.NORMAL)}"
+            android:textColor="@color/heavy_purple"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_screen_title" />
+            app:layout_constraintTop_toBottomOf="@+id/et_input_image_name" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/sm_select_list_type"
@@ -47,8 +72,8 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             android:text="@string/linear_list_option"
-            android:textColor="@color/heavy_gray"
-            android:textStyle="bold"
+            android:textColor="@color/heavy_purple"
+            android:typeface="@{Typeface.defaultFromStyle(vm.isGridLayoutLiveData() ? Typeface.NORMAL : Typeface.BOLD)}"
             app:layout_constraintBottom_toBottomOf="@+id/sm_select_list_type"
             app:layout_constraintEnd_toStartOf="@id/sm_select_list_type"
             app:layout_constraintTop_toTopOf="@+id/sm_select_list_type" />
@@ -58,11 +83,21 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="16dp"
+            android:visibility="@{vm.isLoadingLiveData() ? View.GONE : View.VISIBLE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/sm_select_list_type"
             tools:itemCount="3"
             tools:listitem="@layout/item_photo" />
 
+        <ProgressBar
+            android:id="@+id/pb_loading"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:visibility="@{vm.isLoadingLiveData() ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toBottomOf="@+id/sm_select_list_type"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">Photo Gallery</string>
 
-    <string name="error_message">Sorry, something went wrong :( \nError: %a</string>
-    <string name="internet_error_description">Internet Connection error</string>
+    <string name="edittext_search_image_hint">Find photo</string>
     <string name="linear_list_option">List</string>
     <string name="grid_list_option">Grid</string>
+
+    <string name="error_message">Sorry, something went wrong :( \nError: %a</string>
+    <string name="internet_error_description">Internet Connection error</string>
 </resources>

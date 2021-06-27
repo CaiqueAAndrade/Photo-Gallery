@@ -9,18 +9,18 @@ import com.photogallery.R
 import com.photogallery.databinding.ItemPhotoBinding
 import com.photogallery.model.UnsplashResponse
 
-class PhotosRecyclerViewAdapter(
-    val listener: PhotosItemClickListener
-) : RecyclerView.Adapter<PhotosRecyclerViewAdapter.PhotosViewHolder>() {
+class PhotosRecyclerViewAdapter :
+    RecyclerView.Adapter<PhotosRecyclerViewAdapter.PhotosViewHolder>() {
 
     private var items: ArrayList<UnsplashResponse> = arrayListOf()
 
-    interface PhotosItemClickListener {
-        fun photoItemClickListener(image: String)
-    }
-
     fun setData(unsplashResponseList: List<UnsplashResponse>) {
         this.items.addAll(unsplashResponseList)
+        notifyDataSetChanged()
+    }
+
+    fun clearData() {
+        this.items.clear()
         notifyDataSetChanged()
     }
 
@@ -49,17 +49,10 @@ class PhotosRecyclerViewAdapter(
     override fun getItemCount(): Int = items.size
 
     inner class PhotosViewHolder(private val binding: ItemPhotoBinding) :
-        RecyclerView.ViewHolder(binding.root), View.OnClickListener {
-        init {
-            binding.root.setOnClickListener(this)
-        }
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(unsplashResponse: UnsplashResponse) {
             binding.cpPhotoItem.setupView(unsplashResponse)
-        }
-
-        override fun onClick(p0: View?) {
-            listener.photoItemClickListener(items[adapterPosition].urls.raw)
         }
 
     }
