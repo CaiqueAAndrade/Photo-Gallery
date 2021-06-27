@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
@@ -126,15 +127,20 @@ class CustomPhoto @JvmOverloads constructor(
         image: Drawable?
     ) {
         photo.setOnClickListener {
-            val builder = AlertDialog.Builder(context)
+            val builder = AlertDialog.Builder(context).create()
             val view: View = LayoutInflater.from(context).inflate(R.layout.dialog_image_zoom, null)
             val imageView: ImageView = view.findViewById(R.id.iv_image_zoom)
+            val closeButton: Button = view.findViewById(R.id.bt_close)
+
             builder.setTitle(userName)
             builder.setMessage(description)
             builder.setView(view)
             builder.setCancelable(true)
             builder.show()
 
+            closeButton.setOnClickListener {
+                builder.dismiss()
+            }
             imageView.setImageDrawable(image ?: placeholder)
         }
     }

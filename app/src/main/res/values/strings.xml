@@ -5,6 +5,8 @@
     <string name="linear_list_option">List</string>
     <string name="grid_list_option">Grid</string>
 
+    <string name="close_alert_dialog">Close</string>
+
     <string name="error_message">Sorry, something went wrong :( \nError: %a</string>
     <string name="internet_error_description">Internet Connection error</string>
 </resources>
