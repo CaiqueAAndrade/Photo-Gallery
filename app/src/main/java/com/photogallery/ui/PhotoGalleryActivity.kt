@@ -19,18 +19,18 @@ import com.photogallery.databinding.ActivityPhotoGalleryBinding
 import com.photogallery.ui.viewmodel.PhotoGalleryViewModel
 import com.photogallery.util.GridPaginationScrollListener
 import com.photogallery.util.LinearPaginationScrollListener
-import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 import java.util.*
 
 
-class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener {
+class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener,
+    PhotosRecyclerViewAdapter.OnFavoriteClickListener {
 
     private lateinit var binding: ActivityPhotoGalleryBinding
     private lateinit var photoGalleryApplication: PhotoGalleryApplication
     private lateinit var internetConnectionListener: InternetConnectionListener
-    private val adapter: PhotosRecyclerViewAdapter by inject()
+    private val adapter: PhotosRecyclerViewAdapter = PhotosRecyclerViewAdapter(this)
     private var isListLoading = true
 
     private val viewModel by viewModel<PhotoGalleryViewModel> {
@@ -164,5 +164,9 @@ class PhotoGalleryActivity : AppCompatActivity(), InternetConnectionListener {
     override fun onBackPressed() {
         super.onBackPressed()
         finish()
+    }
+
+    override fun favoriteClickListener(photoId: String, favoriteStatus: Boolean) {
+        viewModel.photoGalleryToJson(photoId, favoriteStatus)
     }
 }

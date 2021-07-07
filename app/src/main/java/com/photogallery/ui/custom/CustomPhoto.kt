@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -30,12 +31,14 @@ class CustomPhoto @JvmOverloads constructor(
     private var photo: ImageView
     private var name: TextView
     private var description: TextView
+    private var favoriteButton: Button
 
     init {
         LayoutInflater.from(context).inflate(R.layout.custom_photo, this, true)
         photo = findViewById(R.id.iv_photo)
         name = findViewById(R.id.tv_name)
         description = findViewById(R.id.tv_description)
+        favoriteButton = findViewById(R.id.bt_favorite)
     }
 
     fun setupView(unsplashResponse: UnsplashResponse) {
@@ -67,6 +70,10 @@ class CustomPhoto @JvmOverloads constructor(
             placeholder = placeholder,
             correctDescription = correctDescription
         )
+
+
+        updateButtonFavorite(unsplashResponse.favorite ?: false)
+
 
     }
 
@@ -155,5 +162,25 @@ class CustomPhoto @JvmOverloads constructor(
         DrawableCompat.setTint(wrappedDrawable, Color.parseColor(color))
         wrappedDrawable.setBounds(0, 0, width, height)
         return wrappedDrawable
+    }
+
+    fun getFavoriteButton(): Button = favoriteButton
+
+    fun updateButtonFavorite(isFavorite: Boolean) {
+        if (isFavorite) {
+            favoriteButton.setCompoundDrawablesWithIntrinsicBounds(
+                null,
+                ContextCompat.getDrawable(context, R.drawable.ic_star_full),
+                null,
+                null
+            )
+        } else {
+            favoriteButton.setCompoundDrawablesWithIntrinsicBounds(
+                null,
+                ContextCompat.getDrawable(context, R.drawable.ic_star_empty),
+                null,
+                null
+            )
+        }
     }
 }

@@ -1,10 +1,14 @@
 package com.photogallery.di
 
+import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
 import com.photogallery.data.remote.provideOkHttpClient
 import com.photogallery.data.remote.provideServiceUnsplash
 import com.photogallery.repository.PhotoGalleryRepository
-import com.photogallery.ui.PhotosRecyclerViewAdapter
+
 import com.photogallery.ui.viewmodel.PhotoGalleryViewModel
+import com.photogallery.util.Constants
 import org.koin.android.ext.koin.androidApplication
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.dsl.viewModel
@@ -23,6 +27,10 @@ val networkModule = module {
     single { provideServiceUnsplash(get()) }
 }
 
-val adapterModule = module {
-    factory { PhotosRecyclerViewAdapter() }
+val preferencesModule = module {
+    single { getSharedPreferences(androidApplication()) }
 }
+
+private fun getSharedPreferences(app: Application): SharedPreferences = app.getSharedPreferences(
+    Constants.SharedPreferences.SHARED_PREFERENCES_KEY, Context.MODE_PRIVATE
+)

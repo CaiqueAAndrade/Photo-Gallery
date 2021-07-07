@@ -4,10 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import com.photogallery.data.remote.InternetConnectionListener
-import com.photogallery.di.adapterModule
-import com.photogallery.di.networkModule
-import com.photogallery.di.repositoryModule
-import com.photogallery.di.viewModelModule
+import com.photogallery.di.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -24,7 +21,7 @@ class PhotoGalleryApplication : Application() {
                     repositoryModule,
                     viewModelModule,
                     networkModule,
-                    adapterModule
+                    preferencesModule
                 )
             )
         }
